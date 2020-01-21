@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>WeSmart</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="../../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="../../plugins/jqvmap/jqvmap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="../../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+
+    <section class="content">
+      
+      <div style="background-color:white" id="div_imprimir">
+ <div id="imprimir">
+    <a class="btn btn-primary" style="color:white;" href="#">Imprimir</a>
+  </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">Código</th>
+            <th scope="col">Usuário responsável</th>
+            <th scope="col">Data plantão</th>
+            <th scope="col">Dia da semana</th>
+          </tr>
+        </thead>
+        <tbody id="add_table">
+          
+          
+        </tbody>
+      </table>
+    <h5 style="text-indent: 10px;"><b>Horário de atendimento: </b></h5>
+    <h6 style="text-indent: 10px;"> 8:30 as 12:30 <b>(Domingo e feriado)</b></h6style="text-indent: 10px;">
+    <h6 style="text-indent: 10px;">13:30 as 17:30 <b>(Feriado)</b></h6>
+    </div>
+   
+</section>
+    
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="../../plugins/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="../../plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="../../plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="../../plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="../../plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="../../plugins/moment/moment.min.js"></script>
+<script src="../../plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="../../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="../../plugins/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="../../dist/js/pages/dashboard.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../../dist/js/demo.js"></script>
+<script src="../../cookie.js"></script>
+
+
+
+<script>
+$(document).ready(function()
+{
+    const url="http://192.168.1.192:8010/";
+     const nome=localStorage.getItem('nome_usr');
+    const codigo=localStorage.getItem("cod_usr");
+
+  if (localStorage.getItem('nome_usr')==null)
+  {
+    alert("Faça o login!!!");
+    location.href='../../../Login';
+  }
+  $('#f_nomeUsuario').html(nome);
+  $("#sair").click(function()
+  {
+    localStorage.removeItem('nome_usr');
+    localStorage.removeItem('cod_usr');
+    if(navegadores = navigator.userAgent.indexOf('Chrome') > -1)
+    {
+      document.cookie="nome_usr=";
+      document.cookie="cod_usr=";
+    }
+    location.href='../../../Login';
+  });
+
+  $("#imprimir").click(function()
+  {
+    var botao=$("#imprimir").html();
+    $("#imprimir").html("");
+    window.print();
+    $("#imprimir").html(botao);
+  });
+
+
+  function get_table()
+  {
+    $("#add_table").html("");
+    $.get(url+"plantao/get_historico/99999999",function(resultado)
+    {
+      if(resultado=="") $("#add_table").append("<tr><th>Nenhum plantão cadastrada</th></tr>");
+      resultado.forEach(element=>
+      {
+        var {codigo,usuario,data_plantao,dia_semana}=element;
+        if (dia_semana==0)dia_semana="Segunda-Feira";
+        else if(dia_semana==1) dia_semana="Terça-Feira";
+        else if(dia_semana==2) dia_semana="Quarta-Feira";
+        else if(dia_semana==3) dia_semana="Quinta-Feira";
+        else if(dia_semana==4) dia_semana="Sexta-Feira";
+        else if(dia_semana==5) dia_semana="Sábado";
+        else if(dia_semana==6) dia_semana="Domingo";
+        $("#add_table").append("<tr>");
+          $("#add_table").append("<th>"+codigo+"</th>");
+          $("#add_table").append("<th>"+usuario+"</th>");
+          $("#add_table").append("<th>"+data_plantao+"</th>");
+          $("#add_table").append("<th>"+dia_semana+"</th>");        
+          $("#add_table").append("</tr>");
+        
+      });
+    })
+  }
+  get_table(15);
+
+ 
+  
+ 
+  
+
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

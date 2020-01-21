@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<a lang="en">
+<head>
+	<title>Login</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="../images/logo.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+
+</head>
+<body>
+
+	<div class="limiter">
+		<div class="container-login100" style="background-image: url('../images/logo.png');">
+			<div class="wrap-login100" id='login_div' >
+				<form  class="login100-form validate-form" id="login" method="POST" >
+					<span class="login100-form-logo">
+						<img src="../images/logo.png" style="width: 100%;">
+					</span>
+
+					<span class="login100-form-title p-b-34 p-t-27">
+						Login
+					</span>
+					<div class="wrap-input100 validate-input" data-validate="Email do usuario">
+						<input class="input100" type="text" name="email_usuario" id="email_usuario" placeholder="Email do usuario">
+						<span class="focus-input100" data-placeholder="&#xf191;"></span>
+					</div>
+
+					
+					<div class="wrap-input100 validate-input" data-validate="Senha do usuário">
+						<input class="input100" type="password" name="senha_usuario" id="senha_usuario" placeholder="Senha do usuário">
+						<span class="focus-input100" data-placeholder="&#xf191;"></span>
+					</div>
+
+						
+				
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" name="login" id="login" type='submit'>
+							Login
+						</button>
+
+						
+					</div>
+					
+				</form>
+				<div id="return_login">
+					
+				</div>
+			<a href="cadastro.html">Cadastre-se</a>
+			<a href="alt_senha.html">Alterar sua senha</a>
+			</div>
+		</div>
+	</div>
+	
+
+	<div id="dropDownSelect1"></div>
+	
+<!--===============================================================================================-->
+<script src="node_modules/jquery/dist/jquery.js"></script> 
+
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+	<script src='js/md5.js'></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+	<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+	  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+	  <script src="../WeSmart/cookie.js"></script>
+
+  <!-- Adicione nosso componente React. -->
+	
+<script>
+
+	$(document).ready(function(){
+		if (localStorage.getItem("nome_usr")!=null)
+		{
+			location.href='../WeSmart';
+		}
+$("#login").submit(function(event)
+{
+	event.preventDefault();
+	email=$("#email_usuario").val();
+	senha=MD5($("#senha_usuario").val());
+	$.get("http://192.168.1.192:8010/usuario/'"+email+"'&'"+senha+"'",function(result)
+	{
+	
+		if (result !="")
+		{
+			var {codigo,nome}= result[0];
+			localStorage.setItem("nome_usr",nome);
+			localStorage.setItem("cod_usr",codigo);
+			alert("Bem vindo "+localStorage.getItem("nome_usr")+"!!");
+			location.href="../WeSmart/";
+			
+		}
+	
+		else
+		{
+			$("#return_login").html("<h5 style='color:red'>Erro ao fazer login!! </h5> ");
+		}
+		
+
+	});
+	$.get('http://192.168.1.192:8010/usuario/inicio_ferias/',function(resultado)
+	{
+		if(resultado!='')
+		{
+			var {usuario}=resultado[0];
+			$.post('http://192.168.1.192:8010/visita/att_status_usuario/',{usuario:usuario,filtro:'1'},function(resultado)
+			{
+				return;
+			});
+		}
+	});
+	
+	$.get('http://192.168.1.192:8010/usuario/fim_ferias/',function(resultado)
+	{
+		if(resultado!='')
+		{
+			var {codigo_ferias,usuario}=resultado[0];
+			$.post('http://192.168.1.192:8010/visita/att_status_usuario/',{usuario:usuario,filtro:'2'},function(resultado)
+			{
+				$.post('http://192.168.1.192:8010/usuario/desativar_ferias/',{ferias:codigo_ferias},function(resultado)
+				{
+					return;
+				});
+			});
+		}
+	});
+	
+});
+});
+
+</script>
+
+</body>
+</html>

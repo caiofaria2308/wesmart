@@ -1,0 +1,205 @@
+  <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>WeSmart</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="../../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="../../plugins/jqvmap/jqvmap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="../../plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
+  <!-- summernote -->
+  <link rel="stylesheet" href="../../plugins/summernote/summernote-bs4.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+
+  <section class="content">
+    <div id="imprimir">
+    <select id="tipo_visita">
+      <option value=0>Todas</option>
+    </select>
+    <button class="btn btn-primary" id="consultar">Consultar</button>
+    
+      <a class="btn btn-primary" style="color:white;" id="btn_imprimir" href="#">Imprimir</a>
+      <select id="qtd_visitas">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="60">60</option>
+        <option value="70">70</option>
+        <option value="80">80</option>
+        <option value="90">90</option>
+        <option value="100">100</option>
+        <option value="1000000000">Todos</option>
+
+
+
+      </select>
+    </div>
+    <div style="background-color:white">
+      
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Código</th>
+          <th scope="col">Técnico</th>
+          <th scope="col">Loja</th>
+          <th scope="col">Data</th>
+          <th scope="col">Tipo</th>
+        </tr>
+      </thead>
+      <tbody id="add_table">
+        
+        
+      </tbody>
+    </table>
+  </div>
+  
+</section>
+    
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="../../plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- ChartJS -->
+<script src="../../plugins/chart.js/Chart.min.js"></script>
+<!-- Sparkline -->
+<script src="../../plugins/sparklines/sparkline.js"></script>
+<!-- JQVMap -->
+<script src="../../plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="../../plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<!-- jQuery Knob Chart -->
+<script src="../../plugins/jquery-knob/jquery.knob.min.js"></script>
+<!-- daterangepicker -->
+<script src="../../plugins/moment/moment.min.js"></script>
+<script src="../../plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="../../plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- Summernote -->
+<script src="../../plugins/summernote/summernote-bs4.min.js"></script>
+<!-- overlayScrollbars -->
+<script src="../../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="../../dist/js/pages/dashboard.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../../dist/js/demo.js"></script>
+<script src="../../cookie.js"></script>
+
+
+
+<script>
+$(document).ready(function()
+{
+    const url="http://192.168.1.192:8010/";
+     const nome=localStorage.getItem('nome_usr');
+    const codigo=localStorage.getItem("cod_usr");
+
+  if (localStorage.getItem('nome_usr')==null)
+  {
+    alert("Faça o login!!!");
+    location.href='../../../Login';
+  }
+  $('#f_nomeUsuario').html(nome);
+  $("#sair").click(function()
+  {
+    localStorage.removeItem('nome_usr');
+    localStorage.removeItem('cod_usr');
+    if(navegadores = navigator.userAgent.indexOf('Chrome') > -1)
+    {
+      document.cookie="nome_usr=";
+      document.cookie="cod_usr=";
+    }
+    location.href='../../../Login';
+  });
+
+  $("#btn_imprimir").click(function()
+  {
+    var botao=$("#imprimir").html();
+    $("#imprimir").html("");
+    window.print();
+    $("#imprimir").html(botao);
+  });
+  $.get(url+"visita/get_tipo_visita",function(resultado)
+  {
+    resultado.forEach(element => {
+      var {codigo_tipo,tipo}=element;
+      $("#tipo_visita").append("<option value="+codigo_tipo+">"+tipo+" </option>");
+      
+    });
+  });
+
+  function get_table()
+  {
+    $("#add_table").html("");
+    
+    $.get(url+"visita/get_historico/"+$("#tipo_visita").val()+"&"+$("#qtd_visitas").val(),function(resultado)
+    {
+      resultado.forEach(element=>
+      {
+
+        var {codigo_visita,nome_usuario,Loja,tipo,DataVisita}=element;
+        $("#add_table").append("<tr>");
+          $("#add_table").append("<th>"+codigo_visita+"</th>");
+          $("#add_table").append("<th>"+nome_usuario+"</th>");
+          $("#add_table").append("<th>"+Loja+"</th>");
+          $("#add_table").append("<th>"+tipo+"</th>");
+          $("#add_table").append("<th>"+DataVisita+"</th>");
+          $("#add_table").append("</tr>");
+      });
+    })
+  }
+  get_table();
+  $("#consultar").click(get_table);
+
+ 
+  
+ 
+  
+
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
